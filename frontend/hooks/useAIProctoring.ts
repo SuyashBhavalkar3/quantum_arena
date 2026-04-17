@@ -89,7 +89,9 @@ async function loadCocoModel(): Promise<boolean> {
 
   cocoModelLoading = true;
   try {
-    console.log("[AIProctoring] Loading COCO-SSD model...");
+    console.log("[AIProctoring] Loading TFJS and COCO-SSD model...");
+    const tf = await import("@tensorflow/tfjs");
+    await tf.ready();
     const cocoSsd = await import("@tensorflow-models/coco-ssd");
     cocoModel = await cocoSsd.load({ base: "lite_mobilenet_v2" });
     console.log("[AIProctoring] ✓ COCO-SSD model loaded successfully");

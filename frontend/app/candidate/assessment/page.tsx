@@ -12,6 +12,7 @@ import {
   Copy,
   Expand,
   Loader2,
+  Play,
   Send,
   ShieldAlert,
 } from "lucide-react";
@@ -25,6 +26,7 @@ import {
   profileAPI,
   proctoringAPI,
 } from "@/lib/api";
+import { executeCode, SUPPORTED_LANGUAGES, ExecutionResult } from "@/services/codeExecutor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,6 +34,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCamera } from "@/hooks/useCamera";
 import { useProctoring } from "@/hooks/useProctoring";
 import { useAIProctoring } from "@/hooks/useAIProctoring";
+import CameraFeed from "@/components/interview/CameraFeed";
 
 type AssessmentQuestion =
   | {
@@ -124,6 +127,11 @@ function AssessmentContent() {
   const [primaryAgreementAccepted, setPrimaryAgreementAccepted] = useState(false);
   const [secondaryAgreementAccepted, setSecondaryAgreementAccepted] = useState(false);
   const [blockedByViolation, setBlockedByViolation] = useState(false);
+  // Code execution state
+  const [codeLanguage, setCodeLanguage] = useState("python3");
+  const [codeOutput, setCodeOutput] = useState("");
+  const [codeRunning, setCodeRunning] = useState(false);
+  const [executionResult, setExecutionResult] = useState<ExecutionResult | null>(null);
   const {
     videoRef,
     isCameraOn,
@@ -172,6 +180,7 @@ function AssessmentContent() {
   const {
     faceCount,
     phoneDetected: assessmentPhoneDetected,
+    currentAlert: aiViolationAlert,
   } = useAIProctoring({
     videoRef,
     active: started && !submitted && isCameraOn,
@@ -556,14 +565,14 @@ function AssessmentContent() {
                   </li>
                 </ul>
               </div>
-              <div className="overflow-hidden rounded-lg border border-[#D6CDC2] bg-black dark:border-slate-700">
-                {stream ? (
-                  <video ref={videoRef} autoPlay muted playsInline className="h-full min-h-[180px] w-full object-cover" />
-                ) : (
-                  <div className="flex min-h-[180px] items-center justify-center p-4 text-center text-sm text-slate-300">
-                    Webcam preview unavailable
-                  </div>
-                )}
+              <div className="overflow-hidden rounded-lg border border-[#D6CDC2] bg-black dark:border-slate-700 aspect-video relative">
+                <CameraFeed
+                  stream={stream}
+                  isCameraOn={isCameraOn}
+                  isMicOn={true}
+                  videoRef={videoRef}
+                  violationAlert={aiViolationAlert}
+                />
               </div>
             </div>
 
@@ -688,20 +697,14 @@ function AssessmentContent() {
           </div>
         </div>
 
-        <div className="mb-6 overflow-hidden rounded-lg border bg-black dark:border-slate-800">
-          {stream ? (
-            <video
-              ref={videoRef}
-              autoPlay
-              muted
-              playsInline
-              className="h-44 w-full object-cover opacity-90"
-            />
-          ) : (
-            <div className="flex h-44 items-center justify-center text-sm text-slate-300">
-              Webcam feed unavailable during assessment
-            </div>
-          )}
+        <div className="fixed bottom-6 right-6 z-50 w-64 md:w-80 aspect-video overflow-hidden rounded-xl border-2 border-slate-200 bg-black shadow-2xl dark:border-slate-700">
+          <CameraFeed
+            stream={stream}
+            isCameraOn={isCameraOn}
+            isMicOn={true}
+            videoRef={videoRef}
+            violationAlert={aiViolationAlert}
+          />
         </div>
 
         {proctoringNotice && (
@@ -746,13 +749,97 @@ function AssessmentContent() {
           </CardHeader>
           <CardContent>
             {question.type === "coding" && (
-              <Textarea
-                value={String(answers[question.id] ?? question.starterCode)}
-                onChange={(event) =>
-                  setAnswers((current) => ({ ...current, [question.id]: event.target.value }))
-                }
-                className="min-h-[350px] bg-slate-50 font-mono text-sm dark:bg-slate-900"
-              />
+              <div className="space-y-3">
+                {/* Language selector */}
+                <div className="flex items-center gap-3">
+                  <label className="text-xs font-medium text-slate-600 dark:text-slate-400">Language:</label>
+                  <select
+                    value={codeLanguage}
+                    onChange={(e) => setCodeLanguage(e.target.value)}
+                    className="text-xs px-2 py-1.5 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                  >
+                    {SUPPORTED_LANGUAGES.map((lang) => (
+                      <option key={lang.id} value={lang.id}>{lang.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Code editor */}
+                <div className="relative rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700">
+                  <div className="flex items-center justify-between px-3 py-1.5 bg-slate-800 border-b border-slate-700">
+                    <span className="text-xs text-slate-400 font-mono">{SUPPORTED_LANGUAGES.find(l => l.id === codeLanguage)?.name ?? codeLanguage}</span>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(String(answers[question.id] ?? ""))}
+                      className="text-slate-400 hover:text-slate-200 p-1 rounded transition-colors"
+                      title="Copy code"
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  <Textarea
+                    value={String(answers[question.id] ?? "")}
+                    onChange={(event) =>
+                      setAnswers((current) => ({ ...current, [question.id]: event.target.value }))
+                    }
+                    className="min-h-[280px] bg-slate-900 text-slate-50 font-mono text-sm dark:bg-slate-900 border-none rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 resize-y"
+                    placeholder={`# Write your ${SUPPORTED_LANGUAGES.find(l => l.id === codeLanguage)?.name ?? ""} solution here...`}
+                    spellCheck={false}
+                  />
+                </div>
+
+                {/* Run code button */}
+                <button
+                  onClick={async () => {
+                    const code = String(answers[question.id] ?? "");
+                    if (!code.trim()) { setCodeOutput("Please write some code first."); return; }
+                    setCodeRunning(true);
+                    setCodeOutput("");
+                    setExecutionResult(null);
+                    try {
+                      const res = await executeCode(code, codeLanguage, `assess_${applicationId}_q${question.id}`);
+                      setExecutionResult(res);
+                      setCodeOutput(res.output || res.error || "(No output)");
+                    } catch (err) {
+                      setCodeOutput(`Execution failed: ${err instanceof Error ? err.message : "Unknown error"}`);
+                    } finally {
+                      setCodeRunning(false);
+                    }
+                  }}
+                  disabled={codeRunning}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  {codeRunning ? (
+                    <><Loader2 className="h-4 w-4 animate-spin" /> Running...</>
+                  ) : (
+                    <><Play className="h-4 w-4" /> Run Code</>
+                  )}
+                </button>
+
+                {/* Output panel */}
+                {(codeOutput || codeRunning) && (
+                  <div className="rounded-lg border border-slate-300 dark:border-slate-700 overflow-hidden">
+                    <div className={`flex items-center justify-between px-3 py-1.5 border-b ${
+                      executionResult?.status === "error"
+                        ? "bg-red-900 border-red-700"
+                        : "bg-slate-800 border-slate-700"
+                    }`}>
+                      <span className="text-xs font-medium text-slate-300">
+                        {executionResult?.status === "error" ? "⚠ Error" : "✓ Output"}
+                        {executionResult?.cpuTime && <span className="ml-2 text-slate-400">· CPU: {executionResult.cpuTime}s</span>}
+                      </span>
+                      <button
+                        onClick={() => { setCodeOutput(""); setExecutionResult(null); }}
+                        className="text-slate-400 hover:text-slate-200 text-xs"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                    <pre className="p-3 bg-slate-900 text-slate-100 text-xs font-mono overflow-x-auto whitespace-pre-wrap max-h-48">
+                      {codeRunning ? "Running your code..." : codeOutput}
+                    </pre>
+                  </div>
+                )}
+              </div>
             )}
 
             {question.type === "mcq" && (
