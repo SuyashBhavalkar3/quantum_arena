@@ -54,6 +54,7 @@ export default function CompleteProfile() {
   const [bio, setBio] = useState("");
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
   
   // Profile data sections
   const [experiences, setExperiences] = useState<Experience[]>([]);
@@ -99,6 +100,7 @@ export default function CompleteProfile() {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    setResumeFile(file);
     setLoading(true);
     setError(null);
     setUploadSuccess(false);
@@ -278,6 +280,10 @@ export default function CompleteProfile() {
       // Add profile photo if selected
       if (profilePhoto) {
         formData.append('profile_photo', profilePhoto);
+      }
+
+      if (resumeFile) {
+        formData.append('resume_file', resumeFile);
       }
       
       // Add JSON data as form fields

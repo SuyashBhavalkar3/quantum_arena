@@ -160,6 +160,7 @@ async def save_profile(
     github_url: Optional[str] = Form(None),
     bio: Optional[str] = Form(None),
     profile_photo: Optional[UploadFile] = File(None),
+    resume_file: Optional[UploadFile] = File(None),
     experiences_json: str = Form(...),
     education_json: str = Form(...),
     skills_json: str = Form(...),
@@ -208,6 +209,21 @@ async def save_profile(
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Profile photo upload failed: {str(e)}")
     
+    # Handle resume upload to Cloudinary
+    resume_url_uploaded = None
+    if resume_file:
+        try:
+            resume_bytes = await resume_file.read()
+            upload_result = cloudinary.uploader.upload(
+                resume_bytes,
+                resource_type="raw",
+                public_id=f"resume_{current_user.id}_{resume_file.filename}",
+                overwrite=True
+            )
+            resume_url_uploaded = upload_result["secure_url"]
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Resume upload failed: {str(e)}")
+    
     try:
         # Get or create candidate record
         candidate = db.query(Candidate).filter(Candidate.user_id == current_user.id).first()
@@ -230,6 +246,9 @@ async def save_profile(
         
         if profile_photo_url:
             candidate.profile_photo_url = profile_photo_url
+            
+        if resume_url_uploaded:
+            candidate.resume_url = resume_url_uploaded
         
         # Clear existing profile data
         db.query(Experience).filter(Experience.candidate_id == candidate.id).delete()
