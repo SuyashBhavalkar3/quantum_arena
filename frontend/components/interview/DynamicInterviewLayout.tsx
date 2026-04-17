@@ -168,16 +168,24 @@ export default function DynamicInterviewLayout({
         handleBackendMessage(msg);
       };
       wsRef.current.onerror = () => {
-        console.error("WebSocket error");
-        addMessage("system", "Connection error occurred");
+        addMessage("system", "Connection error occurred. Retrying...");
       };
       wsRef.current.onclose = () => {};
 
+      // ── Keepalive ping every 20s ──────────────────────────────────────────
+      // Render's reverse proxy closes idle WebSocket connections after ~55s.
+      // Sending a ping keeps the connection alive during long AI processing.
+      const pingInterval = setInterval(() => {
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+          wsRef.current.send(JSON.stringify({ type: "ping" }));
+        }
+      }, 20000);
+
       return () => {
+        clearInterval(pingInterval);
         if (wsRef.current) wsRef.current.close();
       };
     } catch (error) {
-      console.error("WebSocket setup failed:", error);
       addMessage("system", "Failed to connect to interview server");
     }
   }, [applicationId, company, isCameraOn, isFullscreen, position, sessionArmed]);
@@ -230,6 +238,12 @@ export default function DynamicInterviewLayout({
         addMessage("system", `Execution Output:\n${msg.output || msg.error || "No output"}`, {
           executionResult: { output: msg.output, error: msg.error },
         });
+        break;
+      case "connecting":
+        addMessage("system", msg.message || "Setting up your interview, please wait...");
+        break;
+      case "pong":
+        // keepalive acknowledged — no action needed
         break;
       case "interview_complete":
         handleInterviewEnd();
