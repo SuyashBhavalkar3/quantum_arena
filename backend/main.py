@@ -1,3 +1,6 @@
+import os
+os.environ.setdefault("MPLBACKEND", "Agg")  # headless matplotlib — must be before any matplotlib import
+
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
