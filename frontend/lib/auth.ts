@@ -2,6 +2,9 @@
 
 import Cookies from 'js-cookie';
 
+// User data stored in a cookie — typed loosely to accept API response objects
+type StoredUserData = { [key: string]: unknown };
+
 const TOKEN_KEY = 'auth_token';
 const IS_EMPLOYER_KEY = 'is_employer';
 const USER_KEY = 'user_data';
@@ -38,13 +41,15 @@ export function getUserRole(): string | null {
   return Cookies.get(ROLE_KEY) || null;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function setUserData(data: any) {
   Cookies.set(USER_KEY, JSON.stringify(data), { expires: 7 });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getUserData(): any | null {
   const data = Cookies.get(USER_KEY);
-  return data ? JSON.parse(data) : null;
+  return data ? (JSON.parse(data) as unknown) : null;
 }
 
 export function isAuthenticated(): boolean {

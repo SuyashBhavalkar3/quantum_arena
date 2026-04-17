@@ -23,7 +23,6 @@ pillow
 reportlab
 pymupdf
 tavily-python
-pymupdf
 
 # ── Optional heavy ML deps (install separately for voice analysis) ──────────
 # pip install librosa soundfile

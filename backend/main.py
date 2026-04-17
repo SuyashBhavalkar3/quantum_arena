@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from ai_interview_bot.router import router as ai_router
@@ -29,10 +30,16 @@ from resume_analyzer.models import ResumeAnalysis
 
 Base.metadata.create_all(bind=engine)
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+
 app = FastAPI(
     title="AI Recruitment System",
     description="Autonomous recruitment and candidate assessment system",
-    version="2.0.0"
+    version="2.0.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -94,7 +101,4 @@ app.include_router(mock_interview_router)
 app.include_router(voice_analysis_router)
 app.include_router(resume_analyzer_router)
 
-@app.on_event("startup")
-def on_startup():
-    init_db()
 
