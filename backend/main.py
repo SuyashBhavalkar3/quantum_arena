@@ -24,6 +24,8 @@ from experience.routes import router as experience_router
 from prep.routes import router as prep_router
 from mock_interview.routes import router as mock_interview_router
 from voice_analysis.routes import router as voice_analysis_router
+from resume_analyzer.routes import router as resume_analyzer_router
+from resume_analyzer.models import ResumeAnalysis
 
 Base.metadata.create_all(bind=engine)
 
@@ -90,6 +92,7 @@ app.include_router(experience_router)
 app.include_router(prep_router)
 app.include_router(mock_interview_router)
 app.include_router(voice_analysis_router)
+app.include_router(resume_analyzer_router)
 
 @app.on_event("startup")
 def on_startup():

@@ -18,6 +18,7 @@ import {
   BookOpen,
   Brain,
   Users2,
+  Activity
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,7 @@ const navItems = [
   { name: "Dashboard",        href: "/candidate",                icon: Home     },
   { name: "Jobs",             href: "/candidate/jobs",           icon: Search   },
   { name: "Applications",     href: "/candidate/applications",   icon: FileText },
+  { name: "Resume Analyzer",  href: "/candidate/resume-analyzer",icon: Activity },
   { name: "Experience Wall",  href: "/candidate/experience",     icon: Users2   },
   { name: "AI Prep Report",   href: "/candidate/prep",           icon: BookOpen },
   { name: "Mock Interview",   href: "/candidate/mock-interview", icon: Brain    },

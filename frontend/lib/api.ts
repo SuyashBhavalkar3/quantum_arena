@@ -808,3 +808,46 @@ export const proctoringAPI = {
     return res.json();
   },
 };
+
+// Resume Analyzer API
+export interface ResumeAnalysisResponse {
+  overall_score: number;
+  formatting_score: number;
+  strengths: string[];
+  weaknesses: string[];
+  suggestions: string[];
+}
+
+export const resumeAnalyzerAPI = {
+  analyzeProfileResume: async (): Promise<ResumeAnalysisResponse> => {
+    const res = await fetch(`${API_BASE_URL}/v1/resume-analyzer/profile`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Failed to analyze profile resume');
+    }
+    return res.json();
+  },
+
+  analyzeUploadedResume: async (file: File): Promise<ResumeAnalysisResponse> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    // We shouldn't put Content-Type for FormData, fetch does it automatically
+    const headers = getAuthHeaders();
+    delete headers['Content-Type'];
+
+    const res = await fetch(`${API_BASE_URL}/v1/resume-analyzer/upload`, {
+      method: 'POST',
+      headers: headers,
+      body: formData,
+    });
+    if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Failed to analyze uploaded resume');
+    }
+    return res.json();
+  },
+};
