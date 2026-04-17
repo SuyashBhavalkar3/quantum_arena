@@ -126,6 +126,7 @@ export interface HRJob {
   experience_required?: number | null;
   location?: string | null;
   salary_range?: string | null;
+  interview_config?: Record<string, string>;
   created_by: number;
   created_at: string;
 }
@@ -173,6 +174,7 @@ export interface CreateHRJobPayload {
   experience_required: number;
   location: string;
   salary_range: string;
+  interview_config?: Record<string, string>;
 }
 
 export interface CandidateProfileStatus {

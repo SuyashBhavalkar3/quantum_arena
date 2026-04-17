@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 
 class JobCreate(BaseModel):
@@ -9,6 +9,7 @@ class JobCreate(BaseModel):
     experience_required: int
     location: str
     salary_range: str
+    interview_config: Optional[Dict[str, str]] = None
 
 class JobUpdate(BaseModel):
     title: Optional[str]
@@ -17,3 +18,4 @@ class JobUpdate(BaseModel):
     experience_required: Optional[int]
     location: Optional[str]
     salary_range: Optional[str]    
+    interview_config: Optional[Dict[str, str]]

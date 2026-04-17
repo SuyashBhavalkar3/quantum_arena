@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Briefcase, DollarSign, FileText, MapPin, Save, Target } from "lucide-react";
+import { ArrowLeft, Briefcase, DollarSign, FileText, MapPin, Save, Target, Settings2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,6 +21,12 @@ export default function NewJobPage() {
     experience: "",
     description: "",
     skills: "",
+  });
+  const [interviewConfig, setInterviewConfig] = useState<Record<string, string>>({
+    projects: "medium",
+    skills: "medium",
+    education: "medium",
+    experience: "medium"
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,6 +48,7 @@ export default function NewJobPage() {
         experience_required: Number(formData.experience || 0),
         location: formData.location,
         salary_range: formData.salary,
+        interview_config: interviewConfig,
       });
 
       router.push("/hr/jobs");
@@ -178,6 +185,36 @@ export default function NewJobPage() {
                 placeholder="React, TypeScript, Next.js, REST APIs"
                 className="border-[#D6CDC2] bg-white dark:bg-slate-800"
               />
+            </div>
+
+            <div className="space-y-4 rounded-lg border border-[#D6CDC2]/50 bg-[#F8F5F0] p-5 dark:bg-slate-800/30">
+              <div className="flex items-center gap-2 mb-2">
+                <Settings2 className="h-5 w-5 text-[#B8915C]" />
+                <h3 className="font-medium text-[#2D2A24] dark:text-white">Configure Interview Depth</h3>
+              </div>
+              <p className="text-sm text-[#5A534A] dark:text-slate-400 mb-4">
+                Select how deep the AI should probe in each area during the technical and behavioral interview.
+              </p>
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                {(Object.keys(interviewConfig) as Array<keyof typeof interviewConfig>).map((key) => (
+                  <div key={key} className="space-y-2">
+                    <Label htmlFor={`config-${key}`} className="capitalize">{key === 'experience' ? 'Previous Experience' : key}</Label>
+                    <div className="relative">
+                      <select
+                        id={`config-${key}`}
+                        value={interviewConfig[key]}
+                        onChange={(e) => setInterviewConfig(curr => ({ ...curr, [key]: e.target.value }))}
+                        className="flex h-10 w-full items-center justify-between rounded-md border border-[#D6CDC2] bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#B8915C] disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300"
+                      >
+                        <option value="ignore">Ignore (Skip)</option>
+                        <option value="light">Light (1-2 basics)</option>
+                        <option value="medium">Medium (2-4 questions)</option>
+                        <option value="deep">Deep Dive (Probing/Scenarios)</option>
+                      </select>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}

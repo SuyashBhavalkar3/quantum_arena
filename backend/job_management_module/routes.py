@@ -34,6 +34,7 @@ def create_job(
         experience_required=job.experience_required,
         location=job.location,
         salary_range=job.salary_range,
+        interview_config=job.interview_config,
         created_by=current_user.id
     )
 

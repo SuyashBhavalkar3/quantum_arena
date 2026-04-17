@@ -12,6 +12,7 @@ class Job(Base):
     description = Column(String, nullable=True)
 
     required_skills = Column(JSON, nullable=True)
+    interview_config = Column(JSON, nullable=True)
 
     experience_required = Column(Integer, nullable=True)
     location = Column(String, nullable=True)

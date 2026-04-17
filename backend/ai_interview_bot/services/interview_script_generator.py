@@ -8,12 +8,25 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 logger = logging.getLogger(__name__)
 
 
-def generate_interview_script(position: str, company: str, industry: str = "Technology") -> dict:
+def generate_interview_script(position: str, company: str, industry: str = "Technology", interview_config: dict = None) -> dict:
     """Generate a comprehensive 45-minute interview script based on role and industry.
     
     Returns a structured interview with sections, timing, and questions.
     """
     
+    config_prompt = ""
+    if interview_config:
+        config_prompt = "Interview Focus Rules Based on Configuration:\n"
+        for section, depth in interview_config.items():
+            if depth == "ignore":
+                 config_prompt += f"- Skip aspects regarding {section}.\n"
+            elif depth == "light":
+                 config_prompt += f"- Ask 1-2 basic questions regarding {section}.\n"
+            elif depth == "medium":
+                 config_prompt += f"- Ask 2-3 standard questions regarding {section}.\n"
+            elif depth == "deep":
+                 config_prompt += f"- Do a deep dive into {section}: detailed probing, scenarios, edge cases.\n"
+
     prompt = f"""You are an expert technical recruiter. Generate a comprehensive 45-minute technical interview script for the following role.
 
 Position: {position}
@@ -23,6 +36,8 @@ Industry: {industry}
 This script will be used in a live interview session where the company name must remain confidential.
 Do not include the company name anywhere in the generated script content.
 Refer only to the role, team, product context, or business context in generic terms.
+
+{config_prompt}
 
 Create a structured interview with the following sections (total 45 minutes):
 

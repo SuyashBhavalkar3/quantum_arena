@@ -65,6 +65,7 @@ class AdaptiveInterviewBot:
         candidate_response: str,
         position: str,
         company: str,
+        interview_config: dict = None,
     ) -> dict:
         """Generate adaptive next question based on candidate's response."""
 
@@ -89,6 +90,7 @@ class AdaptiveInterviewBot:
             current_stage,
             is_short_response,
             is_detailed_response,
+            interview_config,
         )
 
         try:
@@ -135,6 +137,7 @@ class AdaptiveInterviewBot:
         current_stage: str,
         is_short_response: bool,
         is_detailed_response: bool,
+        interview_config: dict = None,
     ) -> str:
         """Build adaptive system prompt based on context."""
 
@@ -148,6 +151,19 @@ class AdaptiveInterviewBot:
             if is_detailed_response
             else ""
         )
+
+        config_prompt = ""
+        if interview_config:
+            config_prompt = "Interview Focus Rules Based on Configuration:\n"
+            for section, depth in interview_config.items():
+                if depth == "ignore":
+                     config_prompt += f"- Skip aspects regarding {section}.\n"
+                elif depth == "light":
+                     config_prompt += f"- Ask 1-2 basic questions regarding {section}.\n"
+                elif depth == "medium":
+                     config_prompt += f"- Ask 2-3 standard questions regarding {section}.\n"
+                elif depth == "deep":
+                     config_prompt += f"- Do a deep dive into {section}: detailed probing, scenarios, edge cases.\n"
 
         base_prompt = f"""You are a professional interviewer conducting a live interview session for the {position} role.
 
@@ -178,6 +194,8 @@ STRICT BEHAVIORAL RULES:
 13. Ask one question at a time and keep your response to a maximum of 3 sentences.
 {short_response_guidance}{detailed_response_guidance}
 {SAFETY_PROMPT}
+
+{config_prompt}
 
 CURRENT STAGE GUIDANCE:
 """

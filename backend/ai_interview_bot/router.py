@@ -7,6 +7,9 @@ from datetime import datetime
 
 from applications.models import Application, ApplicationStatus
 from authentication.database import SessionLocal
+from authentication.database import SessionLocal
+from applications.models import Application
+from job_management_module.models import Job
 from .services.interview_session import SessionManager
 from .services.code_executor import execute_code
 from .services.proctoring import log_violation
@@ -102,9 +105,23 @@ async def interview_websocket(
         session["company"] = company
         logger.info(f"Session created: {session_id} - role={position}")
 
+        # Fetch job configuration if available
+        interview_config = None
+        if applicationId:
+            db = SessionLocal()
+            try:
+                application = db.query(Application).filter(Application.id == applicationId).first()
+                if application and application.job_id:
+                    job = db.query(Job).filter(Job.id == application.job_id).first()
+                    if job and getattr(job, "interview_config", None):
+                        interview_config = job.interview_config
+            finally:
+                db.close()
+        session["interview_config"] = interview_config
+
         # Generate comprehensive interview script
         try:
-            interview_script = generate_interview_script(position, company)
+            interview_script = generate_interview_script(position, company, interview_config=interview_config)
             session["interview_script"] = interview_script
             logger.info(f"Interview script generated with {len(interview_script.get('sections', []))} sections")
             
@@ -162,7 +179,8 @@ async def interview_websocket(
                             session=session,
                             candidate_response=response_text,
                             position=position,
-                            company=company
+                            company=company,
+                            interview_config=interview_config
                         )
                         
                         action = bot_response.get("action", "continue")
