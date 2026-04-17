@@ -12,7 +12,7 @@ class RecruitmentStrategy(Base):
     role_title = Column(String(255), nullable=False)
     candidates_to_hire = Column(Integer, nullable=False)
     hiring_timeline_days = Column(Integer, nullable=False)
-    market_competition = Column(String(50), nullable=False)
+    market_competition = Column(Text, nullable=False)
     company_category = Column(String(50), nullable=False)
     company_offering = Column(Text, nullable=False)
     competitor_offerings = Column(Text, nullable=False)
