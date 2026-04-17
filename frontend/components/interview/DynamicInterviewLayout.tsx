@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { ShieldAlert, Camera, Expand, AlertTriangle, CheckCircle } from "lucide-react";
 import CodeCompilerPanel from "./CodeCompilerPanel";
 import AvatarCanvas from "./AvatarCanvas";
 import CameraFeed from "./CameraFeed";
@@ -18,7 +19,7 @@ import {
   InterviewContext,
   initialContext,
 } from "@/services/conversationStateManager";
-import { Card, CardContent } from "@/components/ui/card";
+
 import DisqualificationScreen from "./DisqualificationScreen";
 import CompletionScreen from "./CompletionScreen";
 
@@ -345,56 +346,170 @@ export default function DynamicInterviewLayout({
   if (disqualified) return <DisqualificationScreen reason="Exceeded maximum violations" />;
   if (completed) return <CompletionScreen />;
 
-  // Setup screen (UNCHANGED)
+  // Setup screen — full-screen two-panel layout
   if ((!isCameraOn || !isFullscreen || !sessionArmed) && context.currentState === "greeting") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Card className="max-w-md w-full">
-          <CardContent className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">Secure Interview Setup</h2>
-            <p className="text-slate-600 mb-6">
-              Please enable your camera and enter fullscreen mode to start the interview.
-            </p>
-            <div className="space-y-3 text-left">
-              <div className="rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-600">
-                This is a proctored test. Webcam monitoring, tab switching detection, and
-                activity tracking are active. If more than 3 violations occur, the session will
-                automatically end.
+      <div className="h-screen flex flex-col overflow-hidden bg-slate-950">
+        {/* Header bar */}
+        <div className="flex-none flex items-center justify-between px-6 py-3 border-b border-slate-800">
+          <div>
+            <h1 className="text-lg font-bold text-white">AI Interview Setup</h1>
+            <p className="text-sm text-slate-400">{position} at {company}</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className={`flex items-center gap-1.5 text-xs px-3 py-1 rounded-full font-medium ${
+              isCameraOn ? "bg-green-900/40 text-green-400 border border-green-800/50"
+                         : "bg-red-900/40 text-red-400 border border-red-800/50"
+            }`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${isCameraOn ? "bg-green-400" : "bg-red-400"}`} />
+              {isCameraOn ? "Camera On" : "Camera Off"}
+            </span>
+            <span className={`flex items-center gap-1.5 text-xs px-3 py-1 rounded-full font-medium ${
+              isFullscreen ? "bg-green-900/40 text-green-400 border border-green-800/50"
+                           : "bg-slate-800 text-slate-400 border border-slate-700"
+            }`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${isFullscreen ? "bg-green-400" : "bg-slate-500"}`} />
+              {isFullscreen ? "Fullscreen Active" : "Not Fullscreen"}
+            </span>
+          </div>
+        </div>
+
+        {/* Full-screen two-panel body */}
+        <div className="flex-1 min-h-0 flex overflow-hidden">
+
+          {/* LEFT PANEL — Instructions + Agreements */}
+          <div className="flex-1 min-w-0 overflow-y-auto p-8 flex flex-col gap-6">
+
+            {/* Interview Guidelines */}
+            <div className="rounded-xl bg-blue-950/40 border border-blue-800/40 p-6">
+              <h2 className="text-base font-semibold text-blue-300 mb-3">📋 Interview Guidelines</h2>
+              <ul className="space-y-2 text-sm text-blue-300/80">
+                <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">•</span> Camera and microphone must remain on throughout the session</li>
+                <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">•</span> Mix of oral questions and coding challenges</li>
+                <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">•</span> AI proctored — more than 3 violations = auto disqualified</li>
+                <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">•</span> Ensure a quiet, well-lit environment before starting</li>
+                <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">•</span> Questions will be spoken aloud — keep your volume on</li>
+              </ul>
+            </div>
+
+            {/* Proctoring Agreement */}
+            <div className="rounded-xl border border-slate-700 bg-slate-900 p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <ShieldAlert className="h-5 w-5 text-amber-400" />
+                <h2 className="text-base font-semibold text-white">Proctoring Agreement</h2>
               </div>
-              <div className="rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-600">
-                This is a proctored test. Webcam monitoring, tab switching detection, and
-                activity tracking are active. If more than 3 violations occur, the session will
-                automatically end.
+              <p className="text-sm text-slate-400 mb-5">
+                This AI interview is fully proctored. Webcam monitoring, fullscreen enforcement, and activity
+                tracking are active throughout. More than 3 violations will automatically conclude the session.
+              </p>
+              <div className="space-y-4">
+                <label className="flex items-start gap-3 text-sm text-slate-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={primaryAgreementAccepted}
+                    onChange={(e) => setPrimaryAgreementAccepted(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 accent-amber-400"
+                  />
+                  I understand this AI interview is proctored and can be auto-concluded on violations.
+                </label>
+                <label className="flex items-start gap-3 text-sm text-slate-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={secondaryAgreementAccepted}
+                    onChange={(e) => setSecondaryAgreementAccepted(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 accent-amber-400"
+                  />
+                  I agree to webcam monitoring, fullscreen enforcement, and activity tracking.
+                </label>
               </div>
-              <label className="flex items-start gap-3 text-sm text-slate-600">
-                <input type="checkbox" checked={primaryAgreementAccepted} onChange={(e) => setPrimaryAgreementAccepted(e.target.checked)} className="mt-1" />
-                I understand this AI interview is proctored and can be auto-concluded on violations.
-              </label>
-              <label className="flex items-start gap-3 text-sm text-slate-600">
-                <input type="checkbox" checked={secondaryAgreementAccepted} onChange={(e) => setSecondaryAgreementAccepted(e.target.checked)} className="mt-1" />
-                I agree to webcam monitoring, fullscreen enforcement, and activity tracking.
-              </label>
-              <button onClick={toggleCamera} className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium">
-                Enable Camera
-              </button>
-              <button onClick={() => void requestFullscreen()} className="w-full bg-slate-900 hover:bg-slate-800 text-white py-2 rounded-lg font-medium">
-                Enter Fullscreen
-              </button>
+            </div>
+
+            {/* Readiness checklist */}
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: "Camera enabled", ok: isCameraOn },
+                { label: "Fullscreen active", ok: isFullscreen },
+                { label: "Primary agreement", ok: primaryAgreementAccepted },
+                { label: "Secondary agreement", ok: secondaryAgreementAccepted },
+              ].map(({ label, ok }) => (
+                <div key={label} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm border ${
+                  ok ? "bg-green-950/40 text-green-400 border-green-800/40"
+                     : "bg-slate-800/60 text-slate-400 border-slate-700/40"
+                }`}>
+                  {ok
+                    ? <CheckCircle className="h-4 w-4 flex-shrink-0" />
+                    : <span className="w-4 h-4 rounded-full border-2 border-slate-600 flex-shrink-0" />}
+                  {label}
+                </div>
+              ))}
+            </div>
+
+            {/* Camera error */}
+            {cameraError && (
+              <div className="flex items-center gap-3 rounded-xl bg-red-950/40 border border-red-800/40 p-4 text-sm text-red-400">
+                <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+                {cameraError}
+              </div>
+            )}
+
+            {/* Action buttons */}
+            <div className="flex gap-3">
+              {!isCameraOn && (
+                <button
+                  onClick={toggleCamera}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition-colors"
+                >
+                  <Camera className="h-4 w-4" /> Enable Camera
+                </button>
+              )}
+              {!isFullscreen && (
+                <button
+                  onClick={() => void requestFullscreen()}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium transition-colors"
+                >
+                  <Expand className="h-4 w-4" /> Enter Fullscreen
+                </button>
+              )}
               {cameraError && (
-                <button onClick={() => void retryCamera()} className="w-full border border-slate-300 hover:bg-slate-100 py-2 rounded-lg font-medium">
-                  Retry Camera Access
+                <button
+                  onClick={() => void retryCamera()}
+                  className="flex-1 py-3 rounded-xl border border-slate-600 hover:bg-slate-800 text-slate-300 text-sm font-medium transition-colors"
+                >
+                  Retry Camera
                 </button>
               )}
               <button
                 onClick={() => setSessionArmed(true)}
                 disabled={!isCameraOn || !isFullscreen || !primaryAgreementAccepted || !secondaryAgreementAccepted}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-300 text-white py-2 rounded-lg font-medium"
+                className="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-950 disabled:text-emerald-700 text-white text-sm font-semibold transition-colors"
               >
                 Start AI Interview
               </button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+
+          {/* RIGHT PANEL — Camera preview */}
+          <div className="w-72 flex-none flex flex-col border-l border-slate-800 bg-slate-900">
+            <div className="p-4 border-b border-slate-800">
+              <h3 className="text-sm font-semibold text-slate-200">Camera Preview</h3>
+              <p className="text-xs text-slate-500 mt-0.5">Ensure your face is clearly visible</p>
+            </div>
+            <div className="flex-1 flex flex-col p-4 gap-4">
+              <div className="w-full aspect-video rounded-xl overflow-hidden border border-slate-700 bg-black">
+                <CameraFeed
+                  stream={stream}
+                  isCameraOn={isCameraOn}
+                  isMicOn={isMicOn}
+                  videoRef={videoRef}
+                  violationAlert={aiViolationAlert}
+                />
+              </div>
+              <p className="text-xs text-center text-slate-500">
+                {isCameraOn ? "✓ Camera preview active" : "Enable camera to see preview"}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
