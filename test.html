@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sarvam Interview Client</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        #chatMessages { border: 1px solid #ccc; padding: 10px; height: 60vh; overflow-y: auto; }
+        #recordBtn { padding: 10px 20px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>AI Interview (Sarvam &amp; WebSocket)</h1>
+    <div id="chatMessages"></div>
+    <button id="recordBtn">Start Recording</button>
+    <audio id="interviewerAudio" controls hidden></audio>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:8000/ws/interview/demo-session');
+        const chatMessages = document.getElementById('chatMessages');
+        const recordBtn = document.getElementById('recordBtn');
+        const interviewerAudio = document.getElementById('interviewerAudio');
+        let mediaRecorder;
+        let audioChunks = [];
+
+        ws.onopen = () => addMessage('[system] connected to server');
+        ws.onmessage = (event) => {
+            const msg = JSON.parse(event.data);
+            if (msg.type === 'interviewer_question') {
+                addMessage('Interviewer: ' + msg.text);
+                if (msg.audio) {
+                    interviewerAudio.src = 'data:audio/mp3;base64,' + msg.audio;
+                    interviewerAudio.hidden = false;
+                    interviewerAudio.play().catch(console.error);
+                }
+            } else if (msg.type === 'execution_result') {
+                addMessage('Execution result: ' + (msg.error || msg.output));
+            } else if (msg.type === 'error') {
+                addMessage('[error] ' + msg.message);
+            }
+        };
+
+        ws.onclose = () => addMessage('[system] websocket closed');
+
+        function addMessage(text) {
+            const d = document.createElement('div');
+            d.textContent = text;
+            chatMessages.appendChild(d);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        recordBtn.onclick = () => {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                recordBtn.textContent = 'Start Recording';
+            } else {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        mediaRecorder = new MediaRecorder(stream);
+                        audioChunks = [];
+                        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                        mediaRecorder.onstop = () => {
+                            const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                                const base64 = reader.result.split(',')[1];
+                                ws.send(JSON.stringify({ type: 'candidate_audio', audio: base64 }));
+                                addMessage('[you] (audio sent)');
+                            };
+                            reader.readAsDataURL(blob);
+                        };
+                        mediaRecorder.start();
+                        recordBtn.textContent = 'Stop Recording';
+                    })
+                    .catch(err => addMessage('[error] mic access denied'));
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+fastapi
+uvicorn[standard]
+SQLAlchemy
+python-multipart
+passlib==1.7.4
+bcrypt==3.2.2
+python-dotenv
+pydantic[email]
+pyJWT
+cloudinary
+groq
+openai
+pydub
+aiofiles
+websockets
+requests
+gtts
+pdfminer.six
+python-docx
+jinja2
+matplotlib
+pillow
+reportlab
+pymupdf
+tavily-python
+pymupdf
+
+# ── Optional heavy ML deps (install separately for voice analysis) ──────────
+# pip install librosa soundfile
+# pip install openai-whisper

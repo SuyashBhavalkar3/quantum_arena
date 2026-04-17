@@ -1,0 +1,78 @@
+﻿Γû▓ Next.js 16.2.2 (Turbopack)
+
+npx : ΓÜá The 
+"middleware" file 
+convention is 
+deprecated. Please 
+use "proxy" instead. 
+Learn more: https://ne
+xtjs.org/docs/messages
+/middleware-to-proxy
+At line:1 char:1
++ npx next build 2>&1 
+| Out-File 
+build_check2.txt 
+-Encoding UTF8; Selec 
+...
++ ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo    
+          : 
+NotSpecified: (ΓÜá    
+ The 
+"middle...leware-    
+to-proxy:String) [], 
+R    emoteException
+    + 
+FullyQualifiedErrorI  
+  d : 
+NativeCommandError
+ 
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 6.0s
+  Skipping validation of types
+  Finished TypeScript config validation in 10ms ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/25) ...
+cpu backend was 
+already registered. 
+Reusing existing 
+backend
+  Generating static pages using 15 workers (6/25) 
+  Generating static pages using 15 workers (12/25) 
+  Generating static pages using 15 workers (18/25) 
+Γ£ô Generating static pages using 15 workers (25/25) in 744ms
+  Finalizing page optimization ...
+
+Route (app)
+Γöî Γùï /
+Γö£ Γùï /_not-found
+Γö£ Γùï /candidate
+Γö£ Γùï /candidate/applications
+Γö£ Γùï /candidate/assessment
+Γö£ Γùï /candidate/create-profile
+Γö£ Γùï /candidate/experience
+Γö£ Γùï /candidate/interview
+Γö£ Γùï /candidate/jobs
+Γö£ Γùï /candidate/mock-interview
+Γö£ Γùï /candidate/prep
+Γö£ Γùï /candidate/profile
+Γö£ Γùï /candidate/schedule
+Γö£ Γùï /complete-profile
+Γö£ Γùï /hr
+Γö£ Γùï /hr/applicants
+Γö£ Γùï /hr/jobs
+Γö£ Γùï /hr/jobs/new
+Γö£ Γùï /hr/profile
+Γö£ Γùï /hr/questions
+Γö£ Γùï /hr/recruitment-strategy
+Γö£ ╞Æ /hr/reports/[applicationId]
+Γö£ ╞Æ /hr/voice-report/[sessionId]
+Γö£ Γùï /login
+Γöö Γùï /register
+
+
+╞Æ Proxy (Middleware)
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+

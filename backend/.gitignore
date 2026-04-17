@@ -1,0 +1,12 @@
+hireflow.db
+pycache/
+*.pyc
+*.pyo
+__pycache__/
+.env/
+.env
+venv/
+temp.wav
+venv/
+backend/generated_reports/
+v_env/

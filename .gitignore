@@ -1,0 +1,12 @@
+algoX_env
+codebits_env/
+__pycache__/
+codebits_env
+*.pyc
+*.pyo
+myenv
+node_modules
+/backend/.env
+.venv
+.venv/
+backend/.venv
