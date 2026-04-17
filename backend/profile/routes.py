@@ -8,7 +8,7 @@ from candidate_profile.schemas import CandidateProfileComplete
 from candidate_profile.models import Experience, Education, Skill, Project
 from resume_parsing.utils import parse_resume
 import io
-import os
+import os 
 import cloudinary
 import cloudinary.uploader
 from dotenv import load_dotenv
