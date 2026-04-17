@@ -94,3 +94,4 @@ app.include_router(voice_analysis_router)
 @app.on_event("startup")
 def on_startup():
     init_db()
+

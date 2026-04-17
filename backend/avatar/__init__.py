@@ -1,0 +1,1 @@
+# Beyond Presence avatar module

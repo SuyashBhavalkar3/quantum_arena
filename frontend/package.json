@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@livekit/components-react": "^2.9.20",
     "@radix-ui/react-select": "^2.2.6",
     "@splinetool/react-spline": "^4.1.0",
     "@tensorflow-models/coco-ssd": "^2.2.3",
@@ -22,6 +23,7 @@
     "framer-motion": "^12.34.3",
     "gsap": "^3.14.2",
     "js-cookie": "^3.0.5",
+    "livekit-client": "^2.18.3",
     "lottie-react": "^2.4.1",
     "lottie-web": "^5.13.0",
     "lucide-react": "^0.575.0",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Mic,
@@ -85,6 +86,7 @@ interface Scorecard {
 }
 
 export default function MockInterviewRoomImpl() {
+  const router = useRouter();
   const [phase, setPhase] = useState<Phase>("setup");
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
@@ -111,6 +113,7 @@ export default function MockInterviewRoomImpl() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | undefined>(undefined);
+  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // This loads the existing company source once so company autocomplete stays fast and controlled.
   useEffect(() => {
@@ -339,6 +342,22 @@ export default function MockInterviewRoomImpl() {
     setError("");
   };
 
+  const handleStartClick = () => {
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+      clickTimeoutRef.current = null;
+      // Double click detected
+      router.push("https://bey.chat/c77a5562-04aa-4b55-9562-ca33ae88f8b8");
+      return;
+    }
+
+    // Set timeout for single click
+    clickTimeoutRef.current = setTimeout(() => {
+      clickTimeoutRef.current = null;
+      startSession();
+    }, 300); // 300ms window for double click
+  };
+
   const inputCls =
     "w-full px-4 py-3 rounded-xl border border-[#E8E0D6] dark:border-slate-700 bg-white dark:bg-slate-900 text-[#2D2A24] dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#B8915C]/30 focus:border-[#B8915C] transition-all";
 
@@ -373,7 +392,7 @@ export default function MockInterviewRoomImpl() {
                 </div>
               )}
 
-              <button onClick={startSession} disabled={!company.trim() || !role.trim() || starting} className="w-full flex items-center justify-center gap-2 py-3.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-medium disabled:opacity-40 transition-all shadow-sm">
+              <button onClick={handleStartClick} disabled={!company.trim() || !role.trim() || starting} className="w-full flex items-center justify-center gap-2 py-3.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-medium disabled:opacity-40 transition-all shadow-sm">
                 <Play className="w-5 h-5" /> Start Mock Interview
               </button>
             </div>
