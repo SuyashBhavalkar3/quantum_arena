@@ -10,5 +10,3 @@ node_modules
 .venv
 .venv/
 backend/.venv
-flutter_app/
-flutter_app
