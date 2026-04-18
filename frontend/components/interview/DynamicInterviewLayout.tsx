@@ -67,6 +67,7 @@ export default function DynamicInterviewLayout({
       setIsAISpeaking(false);
       setIsWaitingForResponse(false);
     },
+    backendUrl: BACKEND_URL,
   });
 
   // ─── STT Hook (for ChatPanel voice input) ────────────────────────────────
