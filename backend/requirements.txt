@@ -24,6 +24,7 @@ pillow
 reportlab
 pymupdf
 tavily-python
+weasyprint
 
 # ── Optional heavy ML deps (install separately for voice analysis) ──────────
 # pip install librosa soundfile
