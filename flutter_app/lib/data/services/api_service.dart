@@ -234,6 +234,11 @@ class ApiService {
     return CandidateReport.fromJson(response.data);
   }
 
+  Future<CandidateReport> getMyCandidateReport(int applicationId) async {
+    final response = await _dio.get(ApiConstants.candidateMyReport(applicationId));
+    return CandidateReport.fromJson(response.data);
+  }
+
   Future<Map<String, dynamic>> generateCandidateReport(int applicationId) async {
     final response = await _dio.post(ApiConstants.generateReport(applicationId));
     return response.data;
@@ -266,7 +271,7 @@ class ApiService {
   // ============================================
 
   Future<Map<String, dynamic>> startMockInterview(Map<String, dynamic> data) async {
-    final response = await _dio.post(ApiConstants.mockInterviewStart, data: data);
+    final response = await _dio.post(ApiConstants.mockInterviewStart, queryParameters: data);
     return response.data;
   }
 
@@ -277,6 +282,46 @@ class ApiService {
 
   Future<Map<String, dynamic>> endMockInterview(Map<String, dynamic> data) async {
     final response = await _dio.post(ApiConstants.mockInterviewEnd, data: data);
+    return response.data;
+  }
+
+  // RESUME ANALYZER
+  // ============================================
+
+  Future<Map<String, dynamic>> analyzeProfileResume() async {
+    final response = await _dio.get(ApiConstants.resumeAnalyzerProfile);
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> analyzeUploadedResume(String filePath) async {
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(filePath, filename: filePath.split('/').last),
+    });
+    final response = await _dio.post(ApiConstants.resumeAnalyzerUpload, data: formData);
+    return response.data;
+  }
+
+  // AI PREP
+  // ============================================
+
+  Future<Map<String, dynamic>> getPrepResumeStatus() async {
+    final response = await _dio.get(ApiConstants.prepResumeStatus);
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> uploadPrepResume(String filePath) async {
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(filePath, filename: filePath.split('/').last),
+    });
+    final response = await _dio.post(ApiConstants.prepUploadResume, data: formData);
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> generatePrepReport(String jobRole, List<String> targetCompanies) async {
+    final response = await _dio.post(ApiConstants.prepGenerateReport, data: {
+      'job_role': jobRole,
+      'target_companies': targetCompanies,
+    });
     return response.data;
   }
 }

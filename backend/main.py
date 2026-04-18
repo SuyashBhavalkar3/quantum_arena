@@ -50,6 +50,7 @@ app.add_middleware(
     allow_origins=[
         "https://quantum-arena-ten.vercel.app",
         "http://localhost:3000",
+        "*"
     ],
     allow_credentials=True,
     allow_methods=["*"],

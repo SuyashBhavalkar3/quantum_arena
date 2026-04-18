@@ -29,6 +29,16 @@ class _State extends State<MockInterviewScreen> with TickerProviderStateMixin {
   Map<String, dynamic>? _scorecard;
   late AnimationController _pulseCtrl;
 
+  static const _roles = [
+    'Software Engineer', 'Frontend Developer', 'Backend Developer',
+    'Full Stack Developer', 'Data Scientist', 'Product Manager',
+    'DevOps Engineer', 'Mobile Developer', 'UI/UX Designer',
+  ];
+  static const _companies = [
+    'Google', 'Amazon', 'Microsoft', 'Meta', 'Apple', 'Netflix',
+    'TCS', 'Infosys', 'Wipro', 'HCL', 'Tech Mahindra', 'Cognizant',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -160,16 +170,34 @@ class _State extends State<MockInterviewScreen> with TickerProviderStateMixin {
             const SizedBox(height: 8),
             Text('Practice with an AI interviewer using voice', style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
             const SizedBox(height: 32),
-            TextField(
-              style: const TextStyle(color: AppColors.textPrimary),
-              decoration: const InputDecoration(labelText: 'Target Company', prefixIcon: Icon(Icons.business, color: AppColors.textSecondary)),
-              onChanged: (v) => _company = v,
+            Autocomplete<String>(
+              optionsBuilder: (TextEditingValue value) {
+                if (value.text.isEmpty) return const Iterable<String>.empty();
+                return _companies.where((c) => c.toLowerCase().contains(value.text.toLowerCase()));
+              },
+              onSelected: (selection) => _company = selection,
+              fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                return TextField(
+                  controller: controller, focusNode: focusNode, style: const TextStyle(color: AppColors.textPrimary),
+                  decoration: const InputDecoration(labelText: 'Target Company', prefixIcon: Icon(Icons.business, color: AppColors.textSecondary)),
+                  onChanged: (v) => _company = v,
+                );
+              },
             ),
             const SizedBox(height: 14),
-            TextField(
-              style: const TextStyle(color: AppColors.textPrimary),
-              decoration: const InputDecoration(labelText: 'Target Role', prefixIcon: Icon(Icons.work, color: AppColors.textSecondary)),
-              onChanged: (v) => _role = v,
+            Autocomplete<String>(
+              optionsBuilder: (TextEditingValue value) {
+                if (value.text.isEmpty) return const Iterable<String>.empty();
+                return _roles.where((r) => r.toLowerCase().contains(value.text.toLowerCase()));
+              },
+              onSelected: (selection) => _role = selection,
+              fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                return TextField(
+                  controller: controller, focusNode: focusNode, style: const TextStyle(color: AppColors.textPrimary),
+                  decoration: const InputDecoration(labelText: 'Target Role', prefixIcon: Icon(Icons.work, color: AppColors.textSecondary)),
+                  onChanged: (v) => _role = v,
+                );
+              },
             ),
             const SizedBox(height: 24),
             SizedBox(

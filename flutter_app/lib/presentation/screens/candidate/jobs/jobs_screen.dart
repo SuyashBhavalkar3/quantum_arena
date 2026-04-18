@@ -15,6 +15,7 @@ class _JobsScreenState extends State<JobsScreen> {
   bool _loading = true;
   List<JobModel> _jobs = [];
   Set<int> _appliedIds = {};
+  int? _applyingJobId;
   String _search = '';
   String? _error;
 
@@ -51,16 +52,21 @@ class _JobsScreenState extends State<JobsScreen> {
   }
 
   Future<void> _applyForJob(JobModel job) async {
+    setState(() => _applyingJobId = job.id);
     try {
       await ApiService().applyForJob(job.id);
-      setState(() => _appliedIds.add(job.id));
       if (mounted) {
+        setState(() {
+          _appliedIds.add(job.id);
+          _applyingJobId = null;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Applied for ${job.title}!'), backgroundColor: AppColors.success),
         );
       }
     } catch (e) {
       if (mounted) {
+        setState(() => _applyingJobId = null);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed: $e'), backgroundColor: AppColors.error),
         );
@@ -164,9 +170,11 @@ class _JobsScreenState extends State<JobsScreen> {
                                         ),
                                       ),
                                       ElevatedButton(
-                                        onPressed: applied ? null : () => _applyForJob(job),
+                                        onPressed: applied || _applyingJobId != null ? null : () => _applyForJob(job),
                                         style: applied ? ElevatedButton.styleFrom(backgroundColor: AppColors.textSecondary.withValues(alpha: 0.2)) : null,
-                                        child: Text(applied ? 'Applied' : 'Apply', style: TextStyle(fontSize: 13, color: applied ? AppColors.textSecondary : null)),
+                                        child: _applyingJobId == job.id 
+                                            ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accent))
+                                            : Text(applied ? 'Applied' : 'Apply', style: TextStyle(fontSize: 13, color: applied ? AppColors.textSecondary : null)),
                                       ),
                                     ],
                                   ),

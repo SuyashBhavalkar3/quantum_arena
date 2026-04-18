@@ -5,6 +5,7 @@ import '../../../../data/services/api_service.dart';
 import '../../../../data/models/application_model.dart';
 import '../../../../data/models/job_model.dart';
 import '../../../widgets/shared_widgets.dart';
+import 'package:go_router/go_router.dart';
 
 class ApplicationsScreen extends StatefulWidget {
   const ApplicationsScreen({super.key});
@@ -53,6 +54,20 @@ class _State extends State<ApplicationsScreen> {
                       Text('Applied ${Helpers.formatDate(a.createdAt)} • Resume: ${Helpers.formatScore(a.resumeMatchScore)}', style: Theme.of(ctx).textTheme.bodySmall),
                       const SizedBox(height: 4),
                       Text('Assessment: ${a.assessmentProgressLabel} • Interview: ${a.interviewProgressLabel}', style: Theme.of(ctx).textTheme.bodySmall),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          const Expanded(
+                            child: Text('⚠️ Real AI interviews are disabled on mobile. Please use Mock Interview.', style: TextStyle(color: AppColors.error, fontSize: 11)),
+                          ),
+                          const SizedBox(width: 12),
+                          OutlinedButton(
+                            onPressed: () => context.push('/candidate/reports/${a.id}'),
+                            style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8), minimumSize: Size.zero, textStyle: const TextStyle(fontSize: 12)),
+                            child: const Text('Report'),
+                          ),
+                        ],
+                      ),
                     ]),
                   );
                 },

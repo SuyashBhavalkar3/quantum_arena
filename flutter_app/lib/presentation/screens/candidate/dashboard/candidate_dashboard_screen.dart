@@ -103,7 +103,7 @@ class _State extends ConsumerState<CandidateDashboardScreen> {
                   physics: const NeverScrollableScrollPhysics(),
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
-                  childAspectRatio: 1.5,
+                  childAspectRatio: 1.3,
                   children: [
                     StatCard(label: 'Applications', value: '${_stats!.totalApplications}', subtitle: '+${_stats!.applicationsThisWeek} this week', icon: Icons.description_rounded),
                     StatCard(label: 'In Progress', value: '${_stats!.inProgress}', subtitle: '${_stats!.interviewsTotal} in pipeline', icon: Icons.work_rounded),
@@ -114,14 +114,22 @@ class _State extends ConsumerState<CandidateDashboardScreen> {
               const SizedBox(height: 24),
 
               // Quick actions
-              Row(
-                children: [
-                  _QuickAction(icon: Icons.work_rounded, label: 'Jobs', onTap: () => context.go('/candidate/jobs')),
-                  const SizedBox(width: 10),
-                  _QuickAction(icon: Icons.quiz_rounded, label: 'Mock Interview', onTap: () => context.go('/candidate/mock-interview')),
-                  const SizedBox(width: 10),
-                  _QuickAction(icon: Icons.people_rounded, label: 'Experience', onTap: () => context.go('/candidate/experience')),
-                ],
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                child: Row(
+                  children: [
+                    _QuickAction(icon: Icons.work_rounded, label: 'Jobs', onTap: () => context.go('/candidate/jobs')),
+                    const SizedBox(width: 10),
+                    _QuickAction(icon: Icons.quiz_rounded, label: 'Mock', onTap: () => context.go('/candidate/mock-interview')),
+                    const SizedBox(width: 10),
+                    _QuickAction(icon: Icons.analytics_outlined, label: 'Resume', onTap: () => context.go('/candidate/resume-analyzer')),
+                    const SizedBox(width: 10),
+                    _QuickAction(icon: Icons.school_rounded, label: 'AI Prep', onTap: () => context.go('/candidate/prep')),
+                    const SizedBox(width: 10),
+                    _QuickAction(icon: Icons.people_rounded, label: 'Experience', onTap: () => context.go('/candidate/experience')),
+                  ],
+                ),
               ),
               const SizedBox(height: 24),
 
@@ -162,23 +170,22 @@ class _QuickAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.accentBorder),
-          ),
-          child: Column(
-            children: [
-              Icon(icon, color: AppColors.accent, size: 24),
-              const SizedBox(height: 6),
-              Text(label, style: const TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.w600)),
-            ],
-          ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 80,
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.accentBorder),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: AppColors.accent, size: 24),
+            const SizedBox(height: 6),
+            Text(label, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.textPrimary, fontSize: 11, fontWeight: FontWeight.w600)),
+          ],
         ),
       ),
     );

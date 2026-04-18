@@ -12,6 +12,9 @@ import '../../presentation/screens/candidate/notifications/notifications_screen.
 import '../../presentation/screens/candidate/profile/profile_screen.dart';
 import '../../presentation/screens/candidate/experience/experience_screen.dart';
 import '../../presentation/screens/candidate/mock_interview/mock_interview_screen.dart';
+import '../../presentation/screens/candidate/reports/candidate_report_screen.dart';
+import '../../presentation/screens/candidate/resume_analyzer/resume_analyzer_screen.dart';
+import '../../presentation/screens/candidate/prep/prep_onboarding_screen.dart';
 import '../../presentation/screens/hr/hr_shell.dart';
 import '../../presentation/screens/hr/dashboard/hr_dashboard_screen.dart';
 import '../../presentation/screens/hr/jobs/hr_jobs_screen.dart';
@@ -89,6 +92,20 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/candidate/mock-interview',
             builder: (_, __) => const MockInterviewScreen(),
+          ),
+          GoRoute(
+            path: '/candidate/reports/:applicationId',
+            builder: (_, state) => CandidateReportScreen(
+              applicationId: int.parse(state.pathParameters['applicationId']!),
+            ),
+          ),
+          GoRoute(
+            path: '/candidate/resume-analyzer',
+            builder: (_, __) => const ResumeAnalyzerScreen(),
+          ),
+          GoRoute(
+            path: '/candidate/prep',
+            builder: (_, __) => const PrepOnboardingScreen(),
           ),
         ],
       ),

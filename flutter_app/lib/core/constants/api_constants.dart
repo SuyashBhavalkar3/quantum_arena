@@ -1,8 +1,7 @@
 class ApiConstants {
   ApiConstants._();
 
-  static const String baseUrl = 'http://10.0.2.2:8000'; // Android emulator → localhost
-  // static const String baseUrl = 'http://127.0.0.1:8000'; // iOS simulator
+  static const String baseUrl = 'http://127.0.0.1:8000';
 
   // Auth
   static const String register = '/v1/auth/register';
@@ -14,8 +13,7 @@ class ApiConstants {
   static const String profileSave = '/api/profile/save';
   static const String profileGet = '/api/profile';
   static const String profileStatusApi = '/api/profile/status';
-  static const String resumeParse = '/api/resume/parse';
-  static const String resumeStatus = '/api/resume/status';
+  static const String resumeParse = '/api/profile/parse';
   static const String completeProfile = '/v1/candidate/complete-profile';
   static const String experiences = '/v1/candidate/experiences';
   static const String education = '/v1/candidate/education';
@@ -64,6 +62,8 @@ class ApiConstants {
   // Reports
   static String candidateReport(int applicationId) =>
       '/v1/reports/application/$applicationId';
+  static String candidateMyReport(int applicationId) =>
+      '/v1/reports/my/application/$applicationId';
   static String generateReport(int applicationId) =>
       '/v1/reports/application/$applicationId/generate';
   static String downloadReport(int reportId) =>
@@ -89,7 +89,16 @@ class ApiConstants {
   static const String experienceWall = '/v1/experience-wall';
 
   // Mock Interview
-  static const String mockInterviewStart = '/v1/mock-interview/start';
-  static const String mockInterviewMessage = '/v1/mock-interview/message';
-  static const String mockInterviewEnd = '/v1/mock-interview/end';
+  static const String mockInterviewStart = '/mock/start';
+  static const String mockInterviewMessage = '/mock/message';
+  static const String mockInterviewEnd = '/mock/end';
+
+  // Resume Analyzer
+  static const String resumeAnalyzerProfile = '/v1/resume-analyzer/profile';
+  static const String resumeAnalyzerUpload = '/v1/resume-analyzer/upload';
+
+  // AI Prep
+  static const String prepResumeStatus = '/prep/resume-status';
+  static const String prepUploadResume = '/prep/upload-resume';
+  static const String prepGenerateReport = '/prep/generate-report';
 }
