@@ -11,6 +11,3 @@ class PrepOnboardStatus(BaseModel):
 class PrepGenerateRequest(BaseModel):
     job_role: str = Field(..., min_length=1, max_length=200)
     target_companies: List[str] = Field(default=[], max_length=10)
-    days_available: int = Field(..., ge=1, le=365)
-    current_tech_stack: str = Field(..., min_length=1, max_length=500)
-    weakest_skill: str = Field(..., min_length=1, max_length=200)

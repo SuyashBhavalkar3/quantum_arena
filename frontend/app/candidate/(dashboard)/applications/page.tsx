@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, CheckCircle, Clock, FileText, Loader2, Sparkle } from "lucide-react";
+import { AlertCircle, CheckCircle, Clock, FileText, Loader2, BarChart2 } from "lucide-react";
 
 import { applicationsAPI, jobsAPI, HRApplication, CandidateJob } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
@@ -279,7 +279,7 @@ export default function ApplicationsPage() {
                         )}
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2">
                       {isAssessmentWindowActive(application) && (
                         <div className="flex flex-col items-end gap-2">
                           <Link href={`/candidate/assessment?applicationId=${application.id}`}>
@@ -309,6 +309,24 @@ export default function ApplicationsPage() {
                         >
                           <Button className="bg-[#B8915C] hover:bg-[#9F7A4F]">
                             Start AI Interview
+                          </Button>
+                        </Link>
+                      )}
+                      {/* View Report — shown after interview/assessment is done */}
+                      {(
+                        application.status === "interview_completed" ||
+                        application.status === "final_review" ||
+                        application.status === "accepted" ||
+                        application.status === "rejected" ||
+                        application.status === "assessment_completed"
+                      ) && (
+                        <Link href={`/candidate/reports/${application.id}`}>
+                          <Button
+                            variant="outline"
+                            className="border-[#B8915C]/40 text-[#B8915C] hover:bg-[#B8915C]/10 hover:border-[#B8915C] gap-1.5 w-full"
+                          >
+                            <BarChart2 className="h-4 w-4" />
+                            View Report
                           </Button>
                         </Link>
                       )}

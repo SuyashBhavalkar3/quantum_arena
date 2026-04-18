@@ -220,15 +220,16 @@ def generate_report(
         # Final fallback: if we have nothing, build from profile relationships
         resume_summary = _build_summary_from_relationships(candidate)
 
+    # Auto-derive tech context from candidate's DB profile
+    auto_tech_stack = _extract_tech_stack_from_profile(candidate)
+
     # Generate AI report
     try:
         report_data = generate_prep_report(
             resume_summary=resume_summary,
             job_role=payload.job_role,
             target_companies=payload.target_companies,
-            days_available=payload.days_available,
-            current_tech_stack=payload.current_tech_stack,
-            weakest_skill=payload.weakest_skill,
+            auto_tech_stack=auto_tech_stack,
         )
     except Exception as e:
         logger.error(f"GPT-4o report generation failed: {e}")
@@ -293,3 +294,36 @@ def _build_summary_from_relationships(candidate: Candidate) -> str:
         )
 
     return "\n".join(parts)
+
+
+def _extract_tech_stack_from_profile(candidate: Candidate) -> str:
+    """
+    Auto-extract the tech stack and experience context from the candidate's DB
+    profile relationships so the report can be generated without the candidate
+    manually entering their stack.
+    """
+    parts = []
+
+    if candidate.skills:
+        skill = candidate.skills[0]
+        skill_parts = [
+            skill.languages, skill.backend_technologies, skill.databases,
+            skill.ai_ml_frameworks, skill.tools_platforms, skill.core_competencies,
+        ]
+        all_skills = ", ".join(s for s in skill_parts if s)
+        if all_skills:
+            parts.append(f"Tech Skills: {all_skills}")
+
+    titles = [getattr(exp, 'job_title', '') for exp in (candidate.experiences or [])[:3] if getattr(exp, 'job_title', '')]
+    if titles:
+        parts.append(f"Past Roles: {', '.join(titles)}")
+
+    proj_names = [
+        getattr(p, 'project_name', '') or getattr(p, 'title', '')
+        for p in (candidate.projects or [])[:3]
+        if getattr(p, 'project_name', '') or getattr(p, 'title', '')
+    ]
+    if proj_names:
+        parts.append(f"Projects: {', '.join(proj_names)}")
+
+    return " | ".join(parts) if parts else "Not specified (infer from resume)"

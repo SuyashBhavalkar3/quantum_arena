@@ -690,6 +690,42 @@ export const applicationsAPI = {
   },
 };
 
+export const candidateReportsAPI = {
+  getMyReport: async (applicationId: number): Promise<CandidateReport> => {
+    const res = await fetch(`${API_BASE_URL}/v1/reports/my/application/${applicationId}`, {
+      headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.detail || 'Report not found');
+    }
+    return res.json();
+  },
+
+  generateMyReport: async (applicationId: number): Promise<{ message: string; application_id: number; status: string }> => {
+    const res = await fetch(`${API_BASE_URL}/v1/reports/application/${applicationId}/generate`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.detail || 'Failed to generate report');
+    }
+    return res.json();
+  },
+
+  downloadMyReport: async (reportId: number, applicationId: number): Promise<Blob> => {
+    const res = await fetch(`${API_BASE_URL}/v1/reports/${reportId}/download`, {
+      headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.detail || 'Failed to download report');
+    }
+    return res.blob();
+  },
+};
+
 export const assessmentAPI = {
   startAssessment: async (applicationId: number): Promise<AssessmentStartResponse> => {
     const res = await fetch(`${API_BASE_URL}/v1/assessment/start/${applicationId}`, {
