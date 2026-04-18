@@ -80,7 +80,7 @@ def transcribe_audio(audio_bytes: bytes) -> str:
     data = {
         "model": "saaras:v3",
         "mode": "transcribe",
-        "language_code": "unknown"
+        "language_code": "en-IN"
     }
     headers = {"api-subscription-key": SARVAM_API_KEY}
 

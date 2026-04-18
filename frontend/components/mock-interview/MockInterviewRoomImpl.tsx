@@ -343,19 +343,7 @@ export default function MockInterviewRoomImpl() {
   };
 
   const handleStartClick = () => {
-    if (clickTimeoutRef.current) {
-      clearTimeout(clickTimeoutRef.current);
-      clickTimeoutRef.current = null;
-      // Double click detected
-      router.push("https://bey.chat/581ddbb0-bca2-4dbd-9ff0-33821ceed13e");
-      return;
-    }
-
-    // Set timeout for single click
-    clickTimeoutRef.current = setTimeout(() => {
-      clickTimeoutRef.current = null;
-      startSession();
-    }, 300); // 300ms window for double click
+    router.push("https://bey.chat/581ddbb0-bca2-4dbd-9ff0-33821ceed13e");
   };
 
   const inputCls =

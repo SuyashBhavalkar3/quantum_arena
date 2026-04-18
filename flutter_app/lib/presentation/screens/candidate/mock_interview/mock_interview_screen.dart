@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../data/services/api_service.dart';
 
@@ -172,7 +173,7 @@ class _State extends State<MockInterviewScreen> with TickerProviderStateMixin {
             const SizedBox(height: 32),
             Autocomplete<String>(
               optionsBuilder: (TextEditingValue value) {
-                if (value.text.isEmpty) return const Iterable<String>.empty();
+                if (value.text.isEmpty) return _companies;
                 return _companies.where((c) => c.toLowerCase().contains(value.text.toLowerCase()));
               },
               onSelected: (selection) => _company = selection,
@@ -187,7 +188,7 @@ class _State extends State<MockInterviewScreen> with TickerProviderStateMixin {
             const SizedBox(height: 14),
             Autocomplete<String>(
               optionsBuilder: (TextEditingValue value) {
-                if (value.text.isEmpty) return const Iterable<String>.empty();
+                if (value.text.isEmpty) return _roles;
                 return _roles.where((r) => r.toLowerCase().contains(value.text.toLowerCase()));
               },
               onSelected: (selection) => _role = selection,
@@ -200,12 +201,42 @@ class _State extends State<MockInterviewScreen> with TickerProviderStateMixin {
               },
             ),
             const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: _initializing ? null : _startInterview,
-                icon: _initializing ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.background)) : const Icon(Icons.play_arrow),
-                label: Text(_initializing ? 'Starting...' : 'Start Interview'),
+            Material(
+              color: AppColors.accent,
+              borderRadius: BorderRadius.circular(12),
+              clipBehavior: Clip.hardEdge,
+              child: InkWell(
+                onTap: _initializing ? null : () async {
+                  final url = Uri.parse('https://bey.chat/581ddbb0-bca2-4dbd-9ff0-33821ceed13e');
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
+                },
+                onDoubleTap: _initializing ? null : () async {
+                  final url = Uri.parse('https://bey.chat/581ddbb0-bca2-4dbd-9ff0-33821ceed13e');
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (_initializing)
+                        const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.background))
+                      else
+                        const Icon(Icons.play_arrow, color: AppColors.background),
+                      const SizedBox(width: 8),
+                      Text(
+                        _initializing ? 'Starting...' : 'Start Interview',
+                        style: const TextStyle(color: AppColors.background, fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],

@@ -325,7 +325,10 @@ class ApiService {
         'job_role': jobRole,
         'target_companies': targetCompanies,
       },
-      options: Options(responseType: ResponseType.bytes),
+      options: Options(
+        responseType: ResponseType.bytes,
+        receiveTimeout: const Duration(seconds: 180),
+      ),
     );
     return response.data;
   }
