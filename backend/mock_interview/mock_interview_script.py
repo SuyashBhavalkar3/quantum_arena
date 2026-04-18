@@ -115,7 +115,8 @@ COMPANY CONTEXT:
 - Interview Format: {interview_format}
 - Known Question Types: {question_types}
 
-Make questions company-specific (reference their products/services where relevant).
+Make questions company-specific (reference their products/services where relevant), but DO NOT explicitly say or write the company name in the conversational text or script. Refer only to "the company", "our team", or use generalized wording.
+Focus the introduction and welcome purely on the role ({role}), without mentioning the company name.
 DSA questions should reflect the company's known difficulty level.
 System design should relate to problems {company} actually solves.
 Behavioral questions should use {company}'s known leadership principles or values.
