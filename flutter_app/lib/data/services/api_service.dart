@@ -16,6 +16,10 @@ class ApiService {
 
   late final Dio _dio;
 
+  /// Expose the underlying Dio instance for direct use in screens.
+  Dio get dio => _dio;
+
+
   ApiService._internal() {
     _dio = Dio(
       BaseOptions(

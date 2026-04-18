@@ -1,7 +1,7 @@
 class ApiConstants {
   ApiConstants._();
 
-  static const String baseUrl = 'http://127.0.0.1:8000';
+  static const String baseUrl = 'https://quantum-arena.onrender.com';
 
   // Auth
   static const String register = '/v1/auth/register';
@@ -86,7 +86,10 @@ class ApiConstants {
   static const String terminateSession = '/v1/proctoring/terminate-session';
 
   // Experience Wall
-  static const String experienceWall = '/v1/experience-wall';
+  static const String experienceFeed = '/experience/feed';
+  static const String experienceSubmit = '/experience/submit';
+  static const String experienceCompanies = '/experience/companies';
+  static String experienceUpvote(int id) => '/experience/$id/upvote';
 
   // Mock Interview
   static const String mockInterviewStart = '/mock/start';
