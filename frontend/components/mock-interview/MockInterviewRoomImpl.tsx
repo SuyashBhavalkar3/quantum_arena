@@ -347,7 +347,7 @@ export default function MockInterviewRoomImpl() {
       clearTimeout(clickTimeoutRef.current);
       clickTimeoutRef.current = null;
       // Double click detected
-      router.push("https://bey.chat/c77a5562-04aa-4b55-9562-ca33ae88f8b8");
+      router.push("https://bey.chat/581ddbb0-bca2-4dbd-9ff0-33821ceed13e");
       return;
     }
 
