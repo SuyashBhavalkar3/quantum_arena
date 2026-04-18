@@ -49,8 +49,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://quantum-arena-ten.vercel.app",
-        "http://localhost:3000",
-        "*"
+        "http://localhost:3000"
     ],
     allow_credentials=True,
     allow_methods=["*"],
