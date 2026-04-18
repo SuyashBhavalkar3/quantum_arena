@@ -28,7 +28,7 @@ export const executeCode = async (
       code,
       language,
       sessionId,
-      versionIndex: "3",
+      versionIndex: "0",
     };
     
     

@@ -18,7 +18,7 @@ class CodeExecutionRequest(BaseModel):
     code: str
     language: str
     sessionId: str
-    versionIndex: str = 3
+    versionIndex: str = "0"
 
 class CodeExecutionResponse(BaseModel):
     output: str = ""
