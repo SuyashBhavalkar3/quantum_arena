@@ -172,7 +172,7 @@ async def execute_code_jdoodle(code: str, language: str, stdin: str = "") -> Dic
         result = response.json()
         return {
             "success": True,
-            "output": result.get("output", "").strip(),
+            "output": (result.get("output") or "").strip(),
             "error": result.get("error", ""),
             "time": float(result.get("cpuTime", 0)),
             "memory": float(result.get("memory", 0)),
@@ -197,14 +197,14 @@ async def evaluate_coding_submission(
 
     for index, test_case in enumerate(test_cases):
         test_input = test_case.get("input", "")
-        expected_output = test_case.get("output", "").strip()
+        expected_output = (test_case.get("output") or "").strip()
         result = await execute_code_jdoodle(code, language, test_input)
 
         if not result["success"]:
             execution_results.append({"test_case": index + 1, "passed": False, "error": result["error"]})
             continue
 
-        actual_output = result["output"].strip()
+        actual_output = (result.get("output") or "").strip()
         if actual_output == expected_output:
             passed_test_cases += 1
             execution_results.append({"test_case": index + 1, "passed": True, "time": result["time"]})
