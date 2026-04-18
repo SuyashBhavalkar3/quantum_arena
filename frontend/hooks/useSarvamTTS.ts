@@ -9,7 +9,7 @@ interface UseSarvamTTSProps {
 export function useSarvamTTS({
   onSpeakingStart,
   onSpeakingEnd,
-  backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://127.0.0.1:8000",
+  backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000",
 }: UseSarvamTTSProps = {}) {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
