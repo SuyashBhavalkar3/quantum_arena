@@ -106,7 +106,7 @@ export default function ConversationPanel({
   onSendMessage,
   isWaitingForResponse,
   isAISpeaking,
-  backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://127.0.0.1:8000",
+  backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000",
 }: ConversationPanelProps) {
   const [input, setInput] = useState("");
   const [useVoiceInput, setUseVoiceInput] = useState(false);

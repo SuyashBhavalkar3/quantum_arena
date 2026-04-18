@@ -7,7 +7,7 @@ interface UseSTTProps {
 
 export function useSTT({ 
   onTranscriptionReceived,
-  backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://127.0.0.1:8000",
+  backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000",
 }: UseSTTProps = {}) {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
