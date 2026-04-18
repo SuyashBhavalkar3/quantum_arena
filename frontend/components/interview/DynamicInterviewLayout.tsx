@@ -215,7 +215,7 @@ export default function DynamicInterviewLayout({
   const handleBackendMessage = (msg: any) => {
     switch (msg.type) {
       case "interview_started":
-        addMessage("ai", `Welcome! Starting interview for ${position} at ${company}`);
+        addMessage("ai", `Welcome! Starting interview for the ${position} position.`);
         setIsWaitingForResponse(false);
         break;
       case "section_started":
