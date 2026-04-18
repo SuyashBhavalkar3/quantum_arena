@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import '../../core/constants/api_constants.dart';
 import '../models/user_model.dart';
@@ -317,11 +318,15 @@ class ApiService {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> generatePrepReport(String jobRole, List<String> targetCompanies) async {
-    final response = await _dio.post(ApiConstants.prepGenerateReport, data: {
-      'job_role': jobRole,
-      'target_companies': targetCompanies,
-    });
+  Future<Uint8List> generatePrepReport(String jobRole, List<String> targetCompanies) async {
+    final response = await _dio.post(
+      ApiConstants.prepGenerateReport,
+      data: {
+        'job_role': jobRole,
+        'target_companies': targetCompanies,
+      },
+      options: Options(responseType: ResponseType.bytes),
+    );
     return response.data;
   }
 }

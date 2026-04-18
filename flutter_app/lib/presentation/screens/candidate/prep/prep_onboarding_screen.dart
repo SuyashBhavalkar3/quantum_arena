@@ -6,6 +6,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../data/models/analyzer_prep_models.dart';
 import '../../../../data/services/api_service.dart';
 import '../../../widgets/shared_widgets.dart';
+import 'prep_pdf_viewer_screen.dart';
 
 class PrepOnboardingScreen extends ConsumerStatefulWidget {
   const PrepOnboardingScreen({super.key});
@@ -106,31 +107,33 @@ class _PrepOnboardingScreenState extends ConsumerState<PrepOnboardingScreen> {
     });
 
     try {
-      // Because we want to download a PDF but mobile doesn't let us save blobs easily without `path_provider`,
-      // we'll rely on the actual API being triggered. Wait, the backend returns the raw PDF blob.
-      // If we use Dio and get the bytes, we need to save it. 
-      // A quick workaround to rely on browser download is building the full download URL if GET, but this is a POST.
-      // So we have to write it to disk or just open a visual URL. Wait, backend /prep/generate-report is a POST returning bytes.
-      // We will perform the POST request, save it to a temporary directory, and then open it.
-      // But wait! We can just use the url mechanism or alert the user.
-      // Wait, we don't have path_provider inside pubspec yet!
-      // Let's just generate it via API, and then show a success message since we can't save it easily right now.
-      // Actually we installed `url_launcher`. We can just open a mail or so. Wait, let's just do a mock download prompt or save as bytes if we can.
-      // Alternatively, just alert them.
-      
-      final res = await _api.generatePrepReport(_jobRoleController.text, _targetCompanies);
-      setState(() {
-        // Mock download handling for now without path_provider
-        _downloadUrl = "Report generated successfully. (In a full app, this would open the PDF)";
-        _step = "done";
-      });
+      // Fetch PDF bytes from the backend API
+      final bytes = await _api.generatePrepReport(_jobRoleController.text, _targetCompanies);
+
+      if (mounted) {
+        // Reset state so when they come back, they are still on "form" if they want another
+        setState(() {
+          _step = "form"; 
+        });
+
+        // Navigate to Native PDF Viewer
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => PrepPdfViewerScreen(pdfBytes: bytes),
+          ),
+        );
+      }
     } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _step = "error";
-      });
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _step = "error";
+        });
+      }
     } finally {
-      setState(() => _generating = false);
+      if (mounted) {
+        setState(() => _generating = false);
+      }
     }
   }
 
